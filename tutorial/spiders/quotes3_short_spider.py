@@ -2,7 +2,7 @@
 
 import scrapy
 class QuotesSpider(scrapy.Spider):
-    name="quotes3"
+    name="quotes3_short"
     start_urls = [
             'http://quotes.toscrape.com/page/1/'
             ]
@@ -13,9 +13,10 @@ class QuotesSpider(scrapy.Spider):
                 'author': quote.css("small.author::text").get(),
                 }
             
-        next_page = response.css('li.next a::attr(href)').get()
-        if next_page is not None:
-            next_page = response.urljoin(next_page)
-            yield scrapy.Request(next_page, callback=self.parse)
+        for href in response.css('li.next a'):    
+            yield response.follow(href, callback=self.parse)
+ 
+# ref: https://docs.scrapy.org/en/latest/intro/tutorial.html#a-shortcut-for-creating-requests
+
 
 
